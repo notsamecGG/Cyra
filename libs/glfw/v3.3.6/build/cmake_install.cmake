@@ -44,11 +44,6 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/notsamecgg/dev/cpp/opengl/cyra/libs/glfw/v3.3.6/build/examples/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
   include("/home/notsamecgg/dev/cpp/opengl/cyra/libs/glfw/v3.3.6/build/tests/cmake_install.cmake")
 endif()
 
