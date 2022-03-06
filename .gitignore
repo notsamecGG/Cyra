@@ -1,2 +1,4 @@
-*/download/*
-*/build/*
+CMakeCahe.txt
+CMakeFiles
+cmake_install.cmake
+MakeFile
