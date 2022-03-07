@@ -4,13 +4,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "input.h"
-
 
 static void glfw_error_callback(int error, const char* desc);
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
-void printKey(std::any args);
 
 struct WinSize
 {
@@ -48,16 +44,17 @@ int main(void)
 
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); // link with glad
 
-
-    // specific input setup
     glfwSetKeyCallback(window, key_callback); // input bind
     
-    const int scancode = glfwGetKeyScancode(GLFW_KEY_F11);    
-
     // Main loop
     while (!glfwWindowShouldClose(window)) // glfwSetWindowCloseCallbakc, glfwSetWindowShouldClose
     {
         // main loop :)
+        
+        //rendering
+        glClearColor(0, 0, 0, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glfwSwapBuffers(window);
 
         // glfwSetWindowSize(window, mode->width, mode->hegiht);
 
@@ -77,18 +74,22 @@ static void glfw_error_callback(int error, const char* desc)
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+        // glfwSetWindowSize();
+    }
 
     if (key == GLFW_KEY_F11 && action == GLFW_PRESS)
     {
         const GLFWvidmode* mode = glfwGetVideoMode(monitor); // get monitor's params
+
+        printf("w: %i, h: %i \n", mode->width, mode->height);
+
+        // glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
         glfwSetWindowSize(window, mode->width, mode->height);
+        // glViewport(0, 0, mode->width, mode->height);
     }
 
     // printf("Key pressed: %i\n", key);
-}
-
-void printKey(std::any args)
-{
-    printf("key pressed");
 }
