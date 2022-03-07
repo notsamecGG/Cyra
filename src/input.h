@@ -4,6 +4,9 @@
 
 struct Event
 {
+    Event() { }
+    Event(void (*a_callback)(std::any)) : callback(a_callback) { } 
+
     void operator()(std::any& args)
     {
         callback(args);
@@ -16,7 +19,7 @@ class InputManager
 {
 
 public:
-    bool addKey(int& key, Event callback)
+    bool addKey(const int& key, Event callback)
     {
         if (key_map.contains(key))
             return false;
@@ -31,16 +34,15 @@ public:
         return key_map.erase(key);
     }
 
-    bool querryKey(const int& key, std::any args)
+    bool querryKey(int& key, std::any args)
     {
-        if (key_map.contains(key))
-        {
-            Event callback = key_map[key];
+        if (!key_map.contains(key))
+            return false;
 
-            callback(args);
+        Event callback = key_map[key];
+        callback(args);
 
-            return true;
-        }
+        return true;
 
     }
 
