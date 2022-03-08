@@ -6,7 +6,10 @@
 
 
 static void glfw_error_callback(int error, const char* desc);
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+static void mouse_callback(GLFWwindow* window, double posx, double posy);
+static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 struct WinSize
 {
@@ -15,6 +18,7 @@ struct WinSize
 
     WinSize(unsigned int a_width, unsigned int a_height) : height(a_height), width(a_width) { } 
 };
+
 
 GLFWmonitor* monitor;
 GLFWwindow* window;
@@ -45,7 +49,9 @@ int main(void)
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); // link with glad
 
     glfwSetKeyCallback(window, key_callback); // input bind
-    
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
     // Main loop
     while (!glfwWindowShouldClose(window)) // glfwSetWindowCloseCallbakc, glfwSetWindowShouldClose
     {
@@ -88,8 +94,18 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
         // glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
         glfwSetWindowSize(window, mode->width, mode->height);
-        // glViewport(0, 0, mode->width, mode->height);
+        glViewport(0, 0, mode->width, mode->height);
     }
 
-    // printf("Key pressed: %i\n", key);
+    printf("Key pressed: %i\n", key);
+}
+
+static void mouse_callback(GLFWwindow* window, double posx, double posy)
+{
+    printf("x: %f, y: %f \n", posx, posy);
+}
+
+static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    printf("scroll: x: %f, y: %f \n", xoffset, yoffset);
 }

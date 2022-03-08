@@ -1,5 +1,8 @@
-1. Create an entry point 
-2. Create window and game loop
 3. Add support for launching tha game in different monitors
-4. Add a way to launch the game in full screen
-5. Add event handlers for keyboard, mouse move, mouse scroll
+
+Challenges #2 
+ 1. Draw a square on the screen using glDrawArrays
+ 2. Draw a square on the screen using glDrawElemnts
+ 3. Draw a star using glDrawElements
+ 4. Draw the outline of a square using th GL_LINES primitive
+ 5. Repeat challenge 3,  using the name buffer technique
