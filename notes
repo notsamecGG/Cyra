@@ -3,11 +3,3 @@ Useful libs:
  glfw - window manager
  glm - opengl math lib
 
-Challenges:
- 1. Create an entry point
- 2. Create a window and game loop
- 3. Add support for launching the game in different monitors
- 4. Add a way to launch the game in full screen
- 5. Add event handlers for keyboard, mouse move, and mouse scroll
-
-
