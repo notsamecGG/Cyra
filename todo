@@ -1,8 +1,17 @@
-3. Add support for launching tha game in different monitors
+Challenges #1
+ 3. Add support for launching tha game in different monitors
 
 Challenges #2 
- 1. Draw a square on the screen using glDrawArrays
- 2. Draw a square on the screen using glDrawElemnts
- 3. Draw a star using glDrawElements
  4. Draw the outline of a square using th GL_LINES primitive
  5. Repeat challenge 3,  using the name buffer technique
+
+Challenges #3
+ 1. Read te\he book of shaders 
+ 2. Create a shader abstraction in your program, abstraction should be able to:
+	a. Compile shader given the shader type and file path
+ 	b. Destroy shader that has been compiled
+ 3. 
+ 4. Create program that does:
+ 	a. Creates a square in local coordinates and uploads it to GPU
+	b. Uploadstransformation. projection, and view matrix as uniform variables to transform this square from world space to screen space in vertex shader
+	c. moves the square around using the glfw inpu
