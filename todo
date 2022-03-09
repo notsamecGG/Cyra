@@ -6,12 +6,33 @@ Challenges #2
  5. Repeat challenge 3,  using the name buffer technique
 
 Challenges #3
- 1. Read te\he book of shaders 
- 2. Create a shader abstraction in your program, abstraction should be able to:
-	a. Compile shader given the shader type and file path
- 	b. Destroy shader that has been compiled
- 3. 
+ 1. Read the book of shaders 
  4. Create program that does:
- 	a. Creates a square in local coordinates and uploads it to GPU
 	b. Uploadstransformation. projection, and view matrix as uniform variables to transform this square from world space to screen space in vertex shader
-	c. moves the square around using the glfw inpu
+	c. moves the square around using the glfw input
+ 5. Create program:
+	a. Creates a square in local coordinates, upload to GPU
+	b. places the square in the center with trensfomation, view and projection matrices
+	c. Uploades the same uniform variables as in the book of shaders :)
+	d. Is able to run any programs from the book of shaders xd
+
+ 6. Challenges from the book of shaders
+	a. Draw several circles on one square
+	b. Create shader that mimics mondrian painting
+	c. create a spinning color wheel similar to Mac's loading cursor
+
+ 7. Create a vertex shader
+	a. Create  a set of 3D vertices that represent a flat plane on the CPU.
+	b. upload it to GPU
+	c. offset each vertex with fbm (fractal brownian motion) from the book..
+
+ 8. Add lightning
+	a. get normal with `normalize(vec3(leftHeight - rightHeight, 2.0, frontHeight - backHeight))`
+	b. send to fragment
+	c. use Phong
+
+Day/Night cycle challenge
+ 1. Make a night view
+ 2. Make a day view
+ 3. Add sun & moon
+ 4. cycle 

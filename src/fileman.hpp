@@ -24,5 +24,4 @@ const char* load_text(const char* path)
     std::strcpy(out_c, out.c_str()); 
 
     return out_c;
-    // return std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 }

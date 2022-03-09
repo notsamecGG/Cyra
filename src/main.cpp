@@ -5,9 +5,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
-#include "fileman.h"
-#include "models.h"
+#include "fileman.hpp"
+#include "models.hpp"
+#include "shaders.hpp"
 
 
 static void glfw_error_callback(int error, const char* desc);
@@ -59,71 +62,15 @@ int main(void)
     glfwSetScrollCallback(window, scroll_callback);
 #pragma endregion
 
-#pragma region Shader Setup
-    unsigned int vertexShader;
-    unsigned int fragmentShader;
+    // shader setup
+    Shader vertexShader(GL_VERTEX_SHADER, "res/main.vert.glsl");
+    Shader fragmentShader(GL_FRAGMENT_SHADER, "res/main.frag.glsl");
 
-    // vertex shader compilation
-    {
-        const char* source = load_text("res/main.vertex");
+    ShaderProgram shaderProgram(&fragmentShader, &vertexShader);
 
-        vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, 1, &source, NULL);
-        glCompileShader(vertexShader);
-
-        int success;
-        char infoLog[512];
-
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-            printf("Vertex shader compilation failed: %s\n", infoLog);
-        }
-
-        delete source;
-    };
-
-    // fragment shader compilation
-    {
-        const char* source = load_text("res/main.fragment");
-        
-        fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, 1, &source, NULL);
-        glCompileShader(fragmentShader);
-
-        int success;
-        char infoLog[512];
-
-        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-            printf("Fragment shader compilation error: %s\n", infoLog);
-        }
-
-        delete source;
-    };
-
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    {
-        int success;
-        char infoLog[512];
-
-        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-        if (!success)
-        {
-            glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-            printf("Shader linking error: %s \n", infoLog);
-        }
-    };
-#pragma endregion
+    glUseProgram(shaderProgram.id);
+    glDeleteShader(shaderProgram.vertex->id);
+    glDeleteShader(shaderProgram.fragment->id);
 
     // buffer setup
     unsigned int VAO;
@@ -139,35 +86,44 @@ int main(void)
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Triangle::vertices), Triangle::vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Square::vertices), Square::vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Triangle::indices), Triangle::indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Square::indices), Square::indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2 * 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 2 * 3 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    glUseProgram(shaderProgram);
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+
+    // math stuff
+    glUseProgram(shaderProgram.id);
+
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)winSize.width/winSize.height, 0.1f, 1000.0f);
+    glm::mat4 transform(1.0f);
+    transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+    // glm::scale(transform, glm::vec3(0.5f, 0.5f, 0.5f));
+
+    unsigned int matLoc = glGetUniformLocation(shaderProgram.id, "transform");
 
     // Main loop
     while (!glfwWindowShouldClose(window)) // glfwSetWindowCloseCallbakc, glfwSetWindowShouldClose
     {
         // main loop :)
 
-
+        transform = glm::rotate(transform, glm::radians(0.1f), glm::vec3(1.0f, 1.0f, 0.0f));
+        transform = glm::rotate(transform, glm::radians(0.2f), glm::vec3(0.0f, 0.0f, 1.0f));
 
         //rendering
         glClearColor(0, 0, 0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        glUseProgram(shaderProgram.id);
+        glUniformMatrix4fv(matLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
         glBindVertexArray(VAO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
 
