@@ -96,31 +96,36 @@ int main(void)
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-
     // math stuff
     glUseProgram(shaderProgram.id);
-
+    
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)winSize.width/winSize.height, 0.1f, 1000.0f);
-    glm::mat4 transform(1.0f);
-    transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f));
-    // glm::scale(transform, glm::vec3(0.5f, 0.5f, 0.5f));
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
-    unsigned int matLoc = glGetUniformLocation(shaderProgram.id, "transform");
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+
+    unsigned int projectionLoc = glGetUniformLocation(shaderProgram.id, "projection");
+    unsigned int viewLoc = glGetUniformLocation(shaderProgram.id, "view");
+    unsigned int modelLoc = glGetUniformLocation(shaderProgram.id, "model");
 
     // Main loop
     while (!glfwWindowShouldClose(window)) // glfwSetWindowCloseCallbakc, glfwSetWindowShouldClose
     {
         // main loop :)
 
-        transform = glm::rotate(transform, glm::radians(0.1f), glm::vec3(1.0f, 1.0f, 0.0f));
-        transform = glm::rotate(transform, glm::radians(0.2f), glm::vec3(0.0f, 0.0f, 1.0f));
+        //input
+        //std::cout <<  << std::endl;
 
         //rendering
         glClearColor(0, 0, 0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram.id);
-        glUniformMatrix4fv(matLoc, 1, GL_FALSE, glm::value_ptr(transform));
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
