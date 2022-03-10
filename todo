@@ -7,9 +7,6 @@ Challenges #2
 
 Challenges #3
  1. Read the book of shaders 
- 4. Create program that does:
-	b. Uploadstransformation. projection, and view matrix as uniform variables to transform this square from world space to screen space in vertex shader
-	c. moves the square around using the glfw input
  5. Create program:
 	a. Creates a square in local coordinates, upload to GPU
 	b. places the square in the center with trensfomation, view and projection matrices
