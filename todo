@@ -2,17 +2,9 @@ Challenges #1
  3. Add support for launching tha game in different monitors
 
 Challenges #2 
- 4. Draw the outline of a square using th GL_LINES primitive
  5. Repeat challenge 3,  using the name buffer technique
 
 Challenges #3
- 1. Read the book of shaders 
- 5. Create program:
-	a. Creates a square in local coordinates, upload to GPU
-	b. places the square in the center with trensfomation, view and projection matrices
-	c. Uploades the same uniform variables as in the book of shaders :)
-	d. Is able to run any programs from the book of shaders xd
-
  6. Challenges from the book of shaders
 	a. Draw several circles on one square
 	b. Create shader that mimics mondrian painting

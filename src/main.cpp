@@ -21,18 +21,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 static void mouse_callback(GLFWwindow* window, double posx, double posy);
 static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-struct WinSize
-{
-    unsigned int width;
-    unsigned int height;
-
-    WinSize(unsigned int a_width, unsigned int a_height) : height(a_height), width(a_width) { } 
-};
-
 
 GLFWmonitor* monitor;
 GLFWwindow* window;
-WinSize winSize(600, 600);
+glm::vec<2, int> winSize(600);
 
 int main(void)
 {
@@ -50,7 +42,7 @@ int main(void)
 
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-    window = glfwCreateWindow(winSize.width, winSize.height, "Title", NULL, NULL);
+    window = glfwCreateWindow(winSize.x, winSize.y, "Title", NULL, NULL);
 
     if (!window)
         return -1; // window or opengl context creation failed
@@ -74,6 +66,11 @@ int main(void)
     glDeleteShader(shaderProgram.vertex->id);
     glDeleteShader(shaderProgram.fragment->id);
 
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CW);  
+        
     // buffer setup
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
@@ -88,12 +85,12 @@ int main(void)
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Cube::vertices), Cube::vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Square::vertices), Square::vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Cube::indices), Cube::indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Square::indices), Square::indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2 * 3 * sizeof(float), (void*)0);
     // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 2 * 3 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(0);
     // glEnableVertexAttribArray(1);
@@ -101,7 +98,7 @@ int main(void)
     // math stuff
     glUseProgram(shaderProgram.id);
     
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)winSize.width/winSize.height, 0.1f, 1000.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)winSize.x/winSize.y, 0.1f, 1000.0f);
     glm::mat4 view = glm::mat4(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
@@ -112,7 +109,14 @@ int main(void)
     unsigned int viewLoc = glGetUniformLocation(shaderProgram.id, "view");
     unsigned int modelLoc = glGetUniformLocation(shaderProgram.id, "model");
 
+    unsigned int resolutionLoc = glGetUniformLocation(shaderProgram.id, "u_resolution");
+    glUniform2fv(resolutionLoc, 1, glm::value_ptr(glm::vec2(winSize.x, winSize.y)));
+
     glm::vec3 camPosition = glm::vec3(0.0f, 0.0f, -3.0f);
+    glm::vec3 camFront    = glm::vec3(0.0f, 0.0f, 1.0f);
+    glm::vec3 camUp       = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    const float camSpeed = MOVEMENT_SPEED;
 
     // Main loop
     while (!glfwWindowShouldClose(window)) // glfwSetWindowCloseCallbakc, glfwSetWindowShouldClose
@@ -123,31 +127,33 @@ int main(void)
         // camSpeed = glm::vec3();
 
         if (glfwGetKey(window, GLFW_KEY_W))
-            camPosition.z += MOVEMENT_SPEED;
+            camPosition += camFront * camSpeed;
 
         if (glfwGetKey(window, GLFW_KEY_S))
-            camPosition.z -= MOVEMENT_SPEED;
+            camPosition -= camFront * camSpeed;
 
         if (glfwGetKey(window, GLFW_KEY_A))
-            camPosition.x += MOVEMENT_SPEED;
+            camPosition -= glm::normalize(glm::cross(camFront, camUp)) * camSpeed; 
         
         if (glfwGetKey(window, GLFW_KEY_D))
-            camPosition.x -= MOVEMENT_SPEED; 
-
-        if (glfwGetKey(window, GLFW_KEY_SPACE))
-            camPosition.y += MOVEMENT_SPEED;
+            camPosition += glm::normalize(glm::cross(camFront, camUp)) * camSpeed;
         
         if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL))
-            camPosition.y -= MOVEMENT_SPEED;
+            camPosition += camUp * camSpeed;
+
+        if (glfwGetKey(window, GLFW_KEY_SPACE))
+            camPosition -= camUp * camSpeed;
+
+        glm::vec<2, double> mousePos;
+        glfwGetCursorPos(window, &(mousePos.x), &(mousePos.y));
 
         view = glm::mat4(1.0f);
         // view = glm::translate(view, glm::vec3(playerSpeed.x, playerSpeed.y, playerSpeed.z));
-        // view = glm::lookAt(camPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         view = glm::translate(view, camPosition);
     
         //rendering
         glClearColor(0, 0, 0, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shaderProgram.id);
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -155,9 +161,9 @@ int main(void)
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        
+        // TODO: resolve the resize context problem
 
         glfwSwapBuffers(window);
 
