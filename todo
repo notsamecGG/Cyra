@@ -5,11 +5,6 @@ Challenges #2
  5. Repeat challenge 3,  using the name buffer technique
 
 Challenges #3
- 6. Challenges from the book of shaders
-	a. Draw several circles on one square
-	b. Create shader that mimics mondrian painting
-	c. create a spinning color wheel similar to Mac's loading cursor
-
  7. Create a vertex shader
 	a. Create  a set of 3D vertices that represent a flat plane on the CPU.
 	b. upload it to GPU
